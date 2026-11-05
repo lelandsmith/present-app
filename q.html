@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer"><meta name="robots" content="noindex">
+<title>Present · Questions for you</title>
+<style>:root{color-scheme:light dark;--bg:#faf9f6;--surface:#fffefa;--ink:#24342f;--muted:#5f6b65;--line:#e5e5dc;--accent:#305b50;--accent-soft:#c4d4cb;--on-accent:#fff;--clay:#bf846a;--carry-ink:#7a5a22;--carry-tint:#f7f0e2;--serif:ui-serif,'New York','Iowan Old Style',Georgia,serif}
+@media (prefers-color-scheme:dark){:root{--bg:#141a18;--surface:#1b2320;--ink:#e6ebe7;--muted:#9aa69f;--line:#2c3632;--accent:#82b5a4;--accent-soft:#3d5a51;--on-accent:#10201b;--clay:#d39a80;--carry-ink:#d9b86a;--carry-tint:#2a2519}}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 -apple-system,BlinkMacSystemFont,system-ui,sans-serif}
+main{max-width:560px;margin:0 auto;padding:max(36px,env(safe-area-inset-top)) max(22px,env(safe-area-inset-right)) max(48px,env(safe-area-inset-bottom)) max(22px,env(safe-area-inset-left));display:flex;flex-direction:column;gap:18px}
+h1{font:400 30px/1.15 var(--serif);margin:6px 0 0}h2{font-size:15px;font-weight:600;margin:0 0 4px}.d{margin:0;color:var(--muted);font-size:15px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:6px 18px}
+ol,ul{margin:0;padding:0;list-style:none}li{display:grid;grid-template-columns:26px 1fr;gap:8px;padding:12px 0;border-top:1px solid var(--line);font:400 18px/1.4 var(--serif)}li:first-child{border-top:none}
+li span{font:600 13px/1.9 -apple-system,system-ui,sans-serif;color:var(--muted)}#carry{background:var(--carry-tint);border-color:transparent;padding-top:14px}#carry h2{color:var(--carry-ink)}
+.btn{display:flex;align-items:center;justify-content:center;min-height:54px;border-radius:16px;background:var(--accent);color:var(--on-accent);font-size:16px;font-weight:600;text-decoration:none}
+.stores{display:flex;flex-wrap:wrap;gap:8px}.store{flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:52px;padding:6px 14px;border:1px solid var(--line);border-radius:14px;color:var(--ink);font-size:15px;font-weight:500}.store small{color:var(--muted);font-weight:400;font-size:12.5px}
+[hidden]{display:none!important}</style></head>
+<body><main>
+<div><svg width="34" height="34" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M16 4.5A11.5 11.5 0 0 0 4.5 16c0 6.35 5.15 11.5 11.5 11.5" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"/><path d="M16 27.5A11.5 11.5 0 0 0 27.5 16C27.5 9.65 22.35 4.5 16 4.5" stroke="var(--accent-soft)" stroke-width="2" stroke-linecap="round"/><circle cx="16" cy="16" r="2.3" fill="var(--clay)"/></svg></div>
+<div id="bad" hidden><h1 id="badH"></h1><p class="d" id="badT" style="margin-top:8px"></p></div>
+<div id="ok" hidden style="display:flex;flex-direction:column;gap:18px">
+<div><h1 id="h"></h1><p class="d" id="sub" style="margin-top:8px"></p></div>
+<div class="card"><ol id="qs"></ol></div>
+<div class="card" id="carry" hidden><h2 id="carryH"></h2><ul id="cs"></ul></div>
+<a class="btn" id="open" href="present://ask"></a>
+<p class="d" id="note"></p>
+</div>
+<div><p class="d" id="get" style="margin-bottom:10px"></p>
+<!-- TODO(owner): link the two stores once Present is listed. -->
+<div class="stores"><span class="store"><span id="as"></span><small class="soon"></small></span><span class="store"><span id="gp"></span><small class="soon"></small></span></div></div>
+</main>
+<script>
+const MAX = {"questions":40,"carry":6,"text":400,"from":40,"topic":120}
+const WORDS = {"en":{"title":"Questions for you","from":"{name} sent you these questions","someone":"Someone sent you these questions","duo":"From a talk together","carry":"Questions to carry","open":"Open in Present","get":"Don’t have Present yet?","appStore":"App Store","play":"Google Play","soon":"Coming soon","note":"Answer them your own way. Your answers stay yours: nothing goes back to them.","bad":"This link didn’t come through whole","badText":"Ask them to send it again."},"es":{"title":"Preguntas para ti","from":"{name} te envió estas preguntas","someone":"Alguien te envió estas preguntas","duo":"De una conversación con alguien","carry":"Preguntas para llevar","open":"Abrir en Present","get":"¿Todavía no tienes Present?","appStore":"App Store","play":"Google Play","soon":"Muy pronto","note":"Respóndelas a tu manera. Tus respuestas son tuyas: nada vuelve a esa persona.","bad":"Este enlace no llegó completo","badText":"Pídele que lo envíe otra vez."},"pt":{"title":"Perguntas para você","from":"{name} enviou estas perguntas para você","someone":"Alguém enviou estas perguntas para você","duo":"De uma conversa com alguém","carry":"Perguntas para levar","open":"Abrir no Present","get":"Ainda não tem o Present?","appStore":"App Store","play":"Google Play","soon":"Em breve","note":"Responda do seu jeito. Suas respostas são suas: nada volta para essa pessoa.","bad":"Este link não chegou inteiro","badText":"Peça para enviarem de novo."},"fr":{"title":"Des questions pour toi","from":"{name} t’a envoyé ces questions","someone":"Quelqu’un t’a envoyé ces questions","duo":"D’une conversation à deux","carry":"Questions à emporter","open":"Ouvrir dans Present","get":"Tu n’as pas encore Present ?","appStore":"App Store","play":"Google Play","soon":"Bientôt","note":"Réponds-y à ta façon. Tes réponses restent à toi : rien ne retourne à cette personne.","bad":"Ce lien n’est pas arrivé en entier","badText":"Demande-lui de l’envoyer à nouveau."},"de":{"title":"Fragen für dich","from":"{name} hat dir diese Fragen geschickt","someone":"Jemand hat dir diese Fragen geschickt","duo":"Aus einem Gespräch zu zweit","carry":"Fragen zum Mitnehmen","open":"In Present öffnen","get":"Du hast Present noch nicht?","appStore":"App Store","play":"Google Play","soon":"Bald verfügbar","note":"Beantworte sie auf deine Weise. Deine Antworten bleiben deine: nichts geht an die Person zurück.","bad":"Dieser Link ist nicht vollständig angekommen","badText":"Bitte darum, ihn noch einmal zu schicken."},"ja":{"title":"あなたへの問い","from":"{name}さんがこの問いを送ってくれました","someone":"誰かがこの問いを送ってくれました","duo":"誰かとの話から","carry":"持ち歩く問い","open":"Present で開く","get":"まだ Present がありませんか？","appStore":"App Store","play":"Google Play","soon":"近日公開","note":"あなたなりに答えてください。答えはあなたのものです。相手には何も届きません。","bad":"このリンクは最後まで届きませんでした","badText":"もう一度送ってもらってください。"}}
+function cleanPayload(x) {
+  if (!x || typeof x !== 'object' || x.v !== 1) return null
+  const str = (s, n) => (typeof s === 'string' ? s.replace(/\s+/g, ' ').trim().slice(0, n) : '')
+  const list = (a, n) => {
+    const seen = {}, out = []
+    for (const s of Array.isArray(a) ? a : []) { const w = str(s, MAX.text), k = w.toLowerCase(); if (w && !seen[k]) { seen[k] = 1; out.push(w) } }
+    return out.slice(0, n)
+  }
+  const questions = list(x.questions, MAX.questions), carry = list(x.carry, MAX.carry)
+  if (!questions.length && !carry.length) return null
+  const p = { v: 1, lang: typeof x.lang === 'string' && /^[a-z]{2}(-[A-Za-z]{2,4})?$/.test(x.lang) ? x.lang : '', kind: x.kind === 'duo' ? 'duo' : 'solo', questions, carry }
+  const from = str(x.from, MAX.from), topic = str(x.topic, MAX.topic)
+  if (from) p.from = from
+  if (topic) p.topic = topic
+  return p
+}
+function bytesFromB64url(s) {
+  if (typeof s !== 'string' || !/^[A-Za-z0-9_-]*$/.test(s)) return null
+  const b64 = s.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((s.length + 3) % 4)
+  let bin
+  try { bin = atob(b64) } catch (e) { return null }
+  const out = new Uint8Array(bin.length)
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i)
+  return out
+}
+async function streamBytes(bytes, ts) {
+  const w = ts.writable.getWriter()
+  w.write(bytes).catch(() => {})
+  w.close().catch(() => {})
+  const r = ts.readable.getReader(), parts = []
+  let n = 0
+  for (;;) {
+    const x = await r.read()
+    if (x.done) break
+    parts.push(x.value); n += x.value.length
+    if (n > 200000) throw new Error('too long')
+  }
+  const out = new Uint8Array(n)
+  let at = 0
+  for (const p of parts) { out.set(p, at); at += p.length }
+  return out
+}
+async function decodePayload(code) {
+  try {
+    const s = String(code || '').trim().replace(/^#/, '')
+    if (s.length < 2 || s.length > 20000) return null
+    let bytes = bytesFromB64url(s.slice(1))
+    if (!bytes) return null
+    if (s[0] === 'z') {
+      if (typeof DecompressionStream === 'undefined') return null
+      bytes = await streamBytes(bytes, new DecompressionStream('deflate-raw'))
+    } else if (s[0] !== 'j') return null
+    return cleanPayload(JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes)))
+  } catch (e) { return null }
+}
+;(async () => {
+  const pick = (navigator.languages || [navigator.language || 'en']).map((x) => String(x).toLowerCase().split(/[-_]/)[0]).find((x) => WORDS[x]) || 'en'
+  const W = WORDS[pick], $ = (id) => document.getElementById(id), say = (id, s) => { $(id).textContent = s }
+  document.documentElement.lang = pick
+  document.title = 'Present · ' + W.title
+  say('get', W.get); say('as', W.appStore); say('gp', W.play)
+  document.querySelectorAll('.soon').forEach((x) => { x.textContent = W.soon })
+  const code = location.hash.slice(1)
+  const p = await decodePayload(code)
+  if (!p) { say('badH', W.bad); say('badT', W.badText); $('bad').hidden = false; return }
+  say('h', p.from ? W.from.replace('{name}', p.from) : W.someone)
+  say('sub', [p.topic, p.kind === 'duo' ? W.duo : ''].filter(Boolean).join(' · '))
+  const fill = (el, list) => list.forEach((q, i) => { const li = document.createElement('li'), n = document.createElement('span'), w = document.createElement('div'); n.textContent = i + 1; w.textContent = q; if (p.lang) w.lang = p.lang; li.append(n, w); el.append(li) })
+  fill($('qs'), p.questions.length ? p.questions : p.carry)
+  if (p.questions.length && p.carry.length) { say('carryH', W.carry); fill($('cs'), p.carry); $('carry').hidden = false }
+  $('open').href = 'present://ask#' + code; say('open', W.open)
+  say('note', W.note)
+  $('ok').hidden = false
+})()
+</script>
+</body></html>
