@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer"><meta name="robots" content="noindex">
+<title>Present · Shared with you</title>
+<style>:root{color-scheme:light dark;--bg:#faf9f6;--surface:#fffefa;--ink:#24342f;--muted:#5f6b65;--line:#e5e5dc;--accent:#305b50;--accent-soft:#c4d4cb;--clay:#bf846a;--serif:ui-serif,'New York','Iowan Old Style',Georgia,serif}
+@media (prefers-color-scheme:dark){:root{--bg:#141a18;--surface:#1b2320;--ink:#e6ebe7;--muted:#9aa69f;--line:#2c3632;--accent:#82b5a4;--accent-soft:#3d5a51;--clay:#d39a80}}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 -apple-system,BlinkMacSystemFont,system-ui,sans-serif}
+main{max-width:600px;margin:0 auto;padding:max(36px,env(safe-area-inset-top)) max(22px,env(safe-area-inset-right)) max(48px,env(safe-area-inset-bottom)) max(22px,env(safe-area-inset-left));display:flex;flex-direction:column;gap:18px}
+h1{font:400 32px/1.15 var(--serif);margin:6px 0 0;text-wrap:balance}.d{margin:0;color:var(--muted);font-size:15px}
+section{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:14px 18px 6px}
+h2{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin:0 0 4px}
+ul{margin:0;padding:0;list-style:none}li{padding:10px 0;border-top:1px solid var(--line)}li:first-child{border-top:none}
+.l{display:block;font-size:12.5px;color:var(--muted);margin-bottom:2px}.t{font:400 18px/1.42 var(--serif);white-space:pre-line}.m{font:13px -apple-system,system-ui,sans-serif;color:var(--muted)}td:first-child,th{white-space:nowrap}
+.tw{overflow-x:auto;padding-bottom:10px}table{border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums}th{text-align:left;font-weight:500;color:var(--muted)}th,td{padding:6px 14px 6px 0;border-top:1px solid var(--line);vertical-align:top}td:first-child{font-weight:600}
+.stores{display:flex;flex-wrap:wrap;gap:8px}.store{flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:52px;padding:6px 14px;border:1px solid var(--line);border-radius:14px;color:var(--ink);font-size:15px;font-weight:500}.store small{color:var(--muted);font-weight:400;font-size:12.5px}
+[hidden]{display:none!important}</style></head>
+<body><main>
+<div><svg width="34" height="34" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M16 4.5A11.5 11.5 0 0 0 4.5 16c0 6.35 5.15 11.5 11.5 11.5" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"/><path d="M16 27.5A11.5 11.5 0 0 0 27.5 16C27.5 9.65 22.35 4.5 16 4.5" stroke="var(--accent-soft)" stroke-width="2" stroke-linecap="round"/><circle cx="16" cy="16" r="2.3" fill="var(--clay)"/></svg></div>
+<div id="bad" hidden><h1 id="badH"></h1><p class="d" id="badT" style="margin-top:8px"></p></div>
+<div id="ok" hidden style="display:flex;flex-direction:column;gap:18px">
+<div><p class="d" id="from"></p><h1 id="h"></h1><p class="d" id="sub" style="margin-top:6px"></p></div>
+<div id="secs" style="display:flex;flex-direction:column;gap:14px"></div>
+</div>
+<div><p class="d" id="made" style="margin-bottom:14px"></p><p class="d" id="get" style="margin-bottom:10px"></p>
+<!-- TODO(owner): link the two stores once Present is listed. -->
+<div class="stores"><span class="store"><span id="as"></span><small class="soon"></small></span><span class="store"><span id="gp"></span><small class="soon"></small></span></div></div>
+</main>
+<script>
+const FOUND_MAX = {"secs":24,"items":60,"text":2000,"label":80,"h":80,"title":160,"sub":120,"from":40,"cols":6,"rows":12,"cell":80,"code":60000}
+const WORDS = {"en":{"title":"Shared with you","from":"{name} shared this with you","get":"Don’t have Present yet?","appStore":"App Store","play":"Google Play","soon":"Coming soon","made":"Made with Present. This page lives in the link; nothing is kept on a server.","bad":"This link didn’t come through whole","badText":"Ask them to send it again."},"es":{"title":"Shared with you","from":"{name} shared this with you","get":"¿Todavía no tienes Present?","appStore":"App Store","play":"Google Play","soon":"Muy pronto","made":"Made with Present. This page lives in the link; nothing is kept on a server.","bad":"Este enlace no llegó completo","badText":"Pídele que lo envíe otra vez."},"pt":{"title":"Shared with you","from":"{name} shared this with you","get":"Ainda não tem o Present?","appStore":"App Store","play":"Google Play","soon":"Em breve","made":"Made with Present. This page lives in the link; nothing is kept on a server.","bad":"Este link não chegou inteiro","badText":"Peça para enviarem de novo."},"fr":{"title":"Shared with you","from":"{name} shared this with you","get":"Tu n’as pas encore Present ?","appStore":"App Store","play":"Google Play","soon":"Bientôt","made":"Made with Present. This page lives in the link; nothing is kept on a server.","bad":"Ce lien n’est pas arrivé en entier","badText":"Demande-lui de l’envoyer à nouveau."},"de":{"title":"Shared with you","from":"{name} shared this with you","get":"Du hast Present noch nicht?","appStore":"App Store","play":"Google Play","soon":"Bald verfügbar","made":"Made with Present. This page lives in the link; nothing is kept on a server.","bad":"Dieser Link ist nicht vollständig angekommen","badText":"Bitte darum, ihn noch einmal zu schicken."},"ja":{"title":"Shared with you","from":"{name} shared this with you","get":"まだ Present がありませんか？","appStore":"App Store","play":"Google Play","soon":"近日公開","made":"Made with Present. This page lives in the link; nothing is kept on a server.","bad":"このリンクは最後まで届きませんでした","badText":"もう一度送ってもらってください。"}}
+function cleanFound(x) {
+  if (!x || typeof x !== 'object' || x.v !== 1) return null
+  const M = FOUND_MAX
+  const str = (s, n, keepLines) => (typeof s === 'string' ? (keepLines ? s.replace(/[ \t]+/g, ' ').replace(/\n{3,}/g, '\n\n') : s.replace(/\s+/g, ' ')).trim().slice(0, n) : '')
+  const arr = (a) => (Array.isArray(a) ? a : [])
+  const secs = []
+  for (const s of arr(x.secs)) {
+    if (!s || typeof s !== 'object') continue
+    const h = str(s.h, M.h)
+    const items = arr(s.items).map((i) => {
+      if (!i || typeof i !== 'object') return null
+      const it = { t: str(i.t, M.text, true) }
+      const l = str(i.l, M.label), m = str(i.m, M.label)
+      if (l) it.l = l
+      if (m) it.m = m
+      return it.t ? it : null
+    }).filter(Boolean).slice(0, M.items)
+    let tb = null
+    if (s.tb && typeof s.tb === 'object') {
+      const cols = arr(s.tb.cols).map((c) => str(c, M.cell)).slice(0, M.cols)
+      const rows = arr(s.tb.rows).map((r) => (r && typeof r === 'object' ? { n: str(r.n, M.cell), c: cols.map((_, k) => str(arr(r.c)[k], M.cell)) } : null)).filter((r) => r && r.n).slice(0, M.rows)
+      if (cols.length && rows.length) tb = { cols, rows }
+    }
+    if (!h || (!items.length && !tb)) continue
+    const sec = { h, items }
+    if (tb) sec.tb = tb
+    secs.push(sec)
+    if (secs.length >= M.secs) break
+  }
+  if (!secs.length) return null
+  const p = { v: 1, lang: typeof x.lang === 'string' && /^[a-z]{2}(-[A-Za-z]{2,4})?$/.test(x.lang) ? x.lang : '', kind: x.kind === 'duo' ? 'duo' : 'solo', secs }
+  const from = str(x.from, M.from), title = str(x.title, M.title), sub = str(x.sub, M.sub)
+  if (from) p.from = from
+  if (title) p.title = title
+  if (sub) p.sub = sub
+  return p
+}
+function bytesFromB64url(s) {
+  if (typeof s !== 'string' || !/^[A-Za-z0-9_-]*$/.test(s)) return null
+  const b64 = s.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((s.length + 3) % 4)
+  let bin
+  try { bin = atob(b64) } catch (e) { return null }
+  const out = new Uint8Array(bin.length)
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i)
+  return out
+}
+async function streamBytes(bytes, ts) {
+  const w = ts.writable.getWriter()
+  w.write(bytes).catch(() => {})
+  w.close().catch(() => {})
+  const r = ts.readable.getReader(), parts = []
+  let n = 0
+  for (;;) {
+    const x = await r.read()
+    if (x.done) break
+    parts.push(x.value); n += x.value.length
+    if (n > 200000) throw new Error('too long')
+  }
+  const out = new Uint8Array(n)
+  let at = 0
+  for (const p of parts) { out.set(p, at); at += p.length }
+  return out
+}
+async function decodeFound(code) {
+  try {
+    const s = String(code || '').trim().replace(/^#/, '')
+    if (s.length < 2 || s.length > FOUND_MAX.code) return null
+    let bytes = bytesFromB64url(s.slice(1))
+    if (!bytes) return null
+    if (s[0] === 'z') {
+      if (typeof DecompressionStream === 'undefined') return null
+      bytes = await streamBytes(bytes, new DecompressionStream('deflate-raw'))
+    } else if (s[0] !== 'j') return null
+    return cleanFound(JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes)))
+  } catch (e) { return null }
+}
+;(async () => {
+  const pick = (navigator.languages || [navigator.language || 'en']).map((x) => String(x).toLowerCase().split(/[-_]/)[0]).find((x) => WORDS[x]) || 'en'
+  const W = WORDS[pick], $ = (id) => document.getElementById(id), say = (id, s) => { $(id).textContent = s }
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e }
+  document.documentElement.lang = pick
+  say('get', W.get); say('as', W.appStore); say('gp', W.play); say('made', W.made)
+  document.querySelectorAll('.soon').forEach((x) => { x.textContent = W.soon })
+  const p = await decodeFound(location.hash.slice(1))
+  if (!p) { document.title = 'Present'; say('badH', W.bad); say('badT', W.badText); $('bad').hidden = false; return }
+  document.title = 'Present · ' + (p.title || W.title)
+  say('from', p.from ? W.from.replace('{name}', p.from) : W.title)
+  say('h', p.title || W.title)
+  say('sub', p.sub || '')
+  for (const s of p.secs) {
+    const sec = el('section'), ul = el('ul')
+    if (p.lang) sec.lang = p.lang
+    sec.append(el('h2', '', s.h))
+    if (s.tb) {
+      const wrap = el('div', 'tw'), tb = el('table'), hr = el('tr')
+      hr.append(el('th'), ...s.tb.cols.map((c) => el('th', '', c)))
+      tb.append(hr, ...s.tb.rows.map((r) => { const tr = el('tr'); tr.append(el('td', '', r.n), ...r.c.map((c) => el('td', '', c || '–'))); return tr }))
+      wrap.append(tb); sec.append(wrap)
+    }
+    for (const x of s.items) {
+      const li = el('li')
+      if (x.l) li.append(el('span', 'l', x.l))
+      const tx = el('span', 't', x.t)
+      if (x.m) tx.append(el('span', 'm', ' · ' + x.m))
+      li.append(tx); ul.append(li)
+    }
+    if (s.items.length) sec.append(ul)
+    $('secs').append(sec)
+  }
+  $('ok').hidden = false
+})()
+</script>
+</body></html>
